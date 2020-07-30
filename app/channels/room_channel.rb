@@ -9,7 +9,10 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def speak(data)
-    Message.create!(content: data['message'])
-    ActionCable.server.broadcast 'room_channel', data['message']
+    message = Message.create!(content: data['message'])
+    # _message.html.erbにデータを渡してHTMLを生成
+    template = ApplicationController.renderer.render(partial: 'messages/message', locals: {message: message})
+    # 生成されたHTMLを渡してbroadcast
+    ActionCable.server.broadcast 'room_channel', template
   end
 end
